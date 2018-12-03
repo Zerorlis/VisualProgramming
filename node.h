@@ -18,25 +18,18 @@ class Value
 {
 private:
     enum type{
-        /*INT,*/DOUBLE,STRING,LIST
+        DOUBLE,STRING,LIST
     };
 public:
     Value();
     Value(const Value & value);
-//    Value(int value);
     Value(double value);
     virtual ~Value();
     QVector<void *> valuelist; ///< 用于保存值，用void指针指着
     QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
 
     operator QString(); /// 可以转化为一个QString对象，注意，list也是通过QString输出的
-//    operator int(); /// 可以转化为一个int对象,只限定list内只有一个值，且这个值是int才会输出正确结果。如果是double，那么四舍五入，如果是QString，空为0，非空为1，如过是list，空为0，非空为1
     operator double(); ///可以转化为一个double对象
-    ///
-    /// \brief addValue 添加一个值到最后面
-    /// \param value int 添加的值
-    ///
-//    void addValue(const int  value );
 
     ///
     /// \brief addValue 添加一个值到最后面

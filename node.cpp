@@ -14,11 +14,6 @@ Value::Value(const Value & value){
     for (int i =0 ;i < value.valuelist.size();i++){
         switch (value.typelist[i]){
         // 这里switch里面加括号是为了下面所有变量都叫v
-//        case INT:{
-//            int v = *(static_cast<int *> (value.valuelist[i]));
-//            addValue(v);
-//            break;
-//        }
         case DOUBLE:{
             double v = *(static_cast<double*>(value.valuelist[i]));
             addValue(v);
@@ -40,11 +35,6 @@ Value::Value(const Value & value){
 Value::~Value(){
     for (int i =0;i<valuelist.size();i++){
         switch(typelist[i]){
-//        case INT:{
-//            int * v = static_cast<int *>(valuelist[i]);
-//            delete v;
-//            break;
-//        }
         case DOUBLE:{
             double * v = static_cast<double *>(valuelist[i]);
             delete v;
@@ -64,11 +54,6 @@ Value::~Value(){
     }
 }
 
-//void Value::addValue(const int  value){
-//    int * i = new int{value };
-//    valuelist.append(static_cast<void *>(i));
-//    typelist.append(INT);
-//}
 
 void Value::addValue(const double  value){
     double * i = new double{value};
