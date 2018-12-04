@@ -45,10 +45,11 @@ void Value::copy(const Value&value){
     }
 
 }
+
 Value & Value::operator =(const Value& value){
     clear();
     copy(value); // 直接调用拷贝构造函数重新赋值就行。
-    return *this; //记得返回自己，是左值，所以为了递归
+    return *this; //记得返回自己，是左值，所以为了能多次
 }
 
 Value & Value::operator =(const double & value){
@@ -84,6 +85,25 @@ Value::~Value(){
         }
     }
 
+}
+
+
+Value Value::operator [](int i){
+    if (i<0 || i> getSize())
+        return Value();
+    switch (typelist[i]) {
+    case DOUBLE:
+        return Value(*static_cast<double *>(valuelist[i]));
+        break;
+    case STRING:
+        return Value(*static_cast<QString*>(valuelist[i]));
+        break;
+    case LIST:
+        return Value(*static_cast<Value *> (valuelist[i]));
+    default:
+        return Value();
+        break;
+    }
 }
 
 

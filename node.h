@@ -20,17 +20,21 @@ private:
     enum type{
         DOUBLE,STRING,LIST
     };
+private:
+    QVector<void *> valuelist; ///< 用于保存值，用void指针指着
+    QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
 public:
     Value();
     Value(const Value & value); /// 拷贝构造函数，策略是一个Value内的对象都是自己的，不公用，还需重载等号的拷贝函数
     Value(double value);
     Value(QString value);
     virtual ~Value();
-    Value & operator =(const Value& value);
+    Value & operator = (const Value & value);
     Value & operator = (const double & value);
     Value & operator = (const QString & value);
-    QVector<void *> valuelist; ///< 用于保存值，用void指针指着
-    QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
+    Value operator [] (int i);
+
+
     ///
     /// \brief operator QString
     /// 转化为QString,只有值只有一个且为double的时候才能转化
