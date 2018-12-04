@@ -10,7 +10,7 @@
 #include <QString>
 #include <QVector>
 #include <QLinkedList>
-
+#include <QList>
 ///
 /// \brief The Value class 用于表示node的值
 ///
