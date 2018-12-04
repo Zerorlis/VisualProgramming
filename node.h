@@ -22,14 +22,49 @@ private:
     };
 public:
     Value();
-    Value(const Value & value);
+    Value(const Value & value); /// 拷贝构造函数，策略是一个Value内的对象都是自己的，不公用，还需重载等号的拷贝函数
     Value(double value);
+    Value(QString value);
     virtual ~Value();
+    Value & operator =(const Value& value);
     QVector<void *> valuelist; ///< 用于保存值，用void指针指着
     QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
+    ///
+    /// \brief operator QString
+    /// 转化为QString,只有值只有一个且为double的时候才能转化
+    /// 如果有多个，输出[]
+    /// 如果有1个，但是是double，输出这个数字 double<->QString转化,默认小数点后6位
+    /// 如果有1个，但是是List，输出空字串
+    ///
+    operator QString() const;
 
-    operator QString(); /// 可以转化为一个QString对象，注意，list也是通过QString输出的
-    operator double(); ///可以转化为一个double对象
+    ///
+    /// \brief operator double
+    /// 转化为一个double数值，只有当值只有一个的时候才能正确转化，且为double的时候才能转化
+    /// 如果值有多个，输出无限大
+    /// 如果值是1个，但是是个QString，如果可以转化，输出数组，否则输出无限大，double<-> QStirng
+    /// 如果值是1个，但是是个List，输出无限大
+    operator double() const;
+
+
+    ///
+    /// \brief getDate 获取当前的数据，以一个字符串输出，和setDate相反
+    /// \return 一个字符串，和python的list差不多
+    ///  数字根据fmt指定的格式，参数n被格式化，g为默认情况并且可以为下列之一：
+    /// e - 格式化为[-]9.9e[+|-]999
+    /// E - 格式化为[-]9.9E[+|-]999
+    /// f - 格式化为[-]9.9
+    /// g - 使用e或f格式，看哪一个更简练
+    /// G - 使用E或f格式，看哪一个更简练
+    /// 在所有的情况下，小数点之后数字的个数等于prec指定的精度。
+    ///
+    QString getDate(char f = 'g', int prec = 6 ) const ;
+
+    ///
+    /// \brief setDate 设置当前的数据，一种比较高级的形式，和getDate相反
+    /// \param date 一个字符串，和python 的list差不多
+    ///
+    void setDate(QString date);
 
     ///
     /// \brief addValue 添加一个值到最后面
@@ -86,8 +121,12 @@ public:
     /// \brief getSize 获取当前Value内有多少个值
     /// \return  返回Value内多少值
     ///
-    int getSize();
-
+    int getSize() const ;
+    ///
+    /// \brief getType 获取当前value的type
+    /// \return LIST,DOUBLE,STRING，class内部的枚举类型
+    ///
+    type getType() const;
 
 
 };
