@@ -76,6 +76,51 @@ bool Value:: operator bool() const{
     }
 }
 
+bool Value::operator ==(const Value & value) const{
+    if(getSize()!=value.getSize()){
+        return false;
+    }
+    for(int i =0 ;i < getSize();i++){
+        if(typelist[i]!=value.typelist[i]){
+            return false;
+        }
+        switch (typelist[i]) {
+        case DOUBLE:{
+            double v1 = *static_cast<double*>(valuelist[i]);
+            double v2 = *static_cast<double*>(value.valuelist[i]);
+            if (v1!=v2){
+                return false;
+            }
+            break;
+        }
+        case STRING:{
+            QString& v1 = *static_cast<QString*>(valuelist[i]);
+            QString& v2 = *static_cast<QString*>(value.valuelist[i]);
+            if(!(v1==v2)){
+                return false;
+            }
+            break;
+        }
+        case LIST:{
+            Value & v1 = *static_cast<Value*>(valuelist[i]);
+            Value & v2 = *static_cast<Value*>(value.valuelist[i]);
+            if(!(v1==v2)){
+                return false;
+            }
+            break;
+        }
+        default:
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Value::operator !=(const Value & value) const{
+    return !(*this==value)
+}
+
+
 Value & Value::operator =(const Value& value){
     if (this == &value){
         return *this;
