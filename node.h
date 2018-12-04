@@ -32,7 +32,9 @@ public:
     Value & operator = (const Value & value);
     Value & operator = (const double & value);
     Value & operator = (const QString & value);
-    Value operator [] (int i);
+    Value operator [] (int i) const;
+    bool operator == (const Value & Value) const;
+    operator bool() const;
 
 
     ///

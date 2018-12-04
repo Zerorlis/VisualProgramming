@@ -22,6 +22,7 @@ Value::Value(double value){
 Value::Value(QString value){
     addValue(value);
 }
+
 void Value::copy(const Value&value){
      for (int i =0 ;i < value.valuelist.size();i++){
         switch (value.typelist[i]){
@@ -44,6 +45,35 @@ void Value::copy(const Value&value){
         }
     }
 
+}
+
+bool Value:: operator bool() const{
+    if (getSize()==1){
+        switch (typelist[0]) {
+        case DOUBLE:
+            double v = *static_cast<double*>(valuelist[0]);
+            if (v!=0)
+                return false;
+            else
+                return true;
+            break;
+        case STRING:
+            QString v = *static_cast<QString*>(valuelist[0]);
+            if (v.isEmpty())
+                return false;
+            else
+                return true;
+        case LIST:
+            return true;
+        default:
+            return false;
+            break;
+        }
+    }else if(getSize()==0){
+        return false;
+    }else{
+        return true;
+    }
 }
 
 Value & Value::operator =(const Value& value){
@@ -97,7 +127,7 @@ Value::~Value(){
 }
 
 
-Value Value::operator [](int i){
+Value Value::operator [](int i) const {
     if (i<0 || i> getSize())
         return Value();
     switch (typelist[i]) {
