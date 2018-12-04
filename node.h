@@ -27,6 +27,8 @@ public:
     Value(QString value);
     virtual ~Value();
     Value & operator =(const Value& value);
+    Value & operator = (const double & value);
+    Value & operator = (const QString & value);
     QVector<void *> valuelist; ///< 用于保存值，用void指针指着
     QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
     ///
@@ -127,6 +129,9 @@ public:
     /// \return LIST,DOUBLE,STRING，class内部的枚举类型
     ///
     type getType() const;
+
+private:
+    void copy(const Value & value); // 提供拷贝构造函数和=重载使用
 
 
 };

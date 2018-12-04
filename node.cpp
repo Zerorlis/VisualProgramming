@@ -13,7 +13,17 @@ Value::Value()
 
 }
 Value::Value(const Value & value){
-    for (int i =0 ;i < value.valuelist.size();i++){
+    copy(value);
+}
+
+Value::Value(double value){
+    addValue(value);
+}
+Value::Value(QString value){
+    addValue(value);
+}
+void Value::copy(const Value&value){
+     for (int i =0 ;i < value.valuelist.size();i++){
         switch (value.typelist[i]){
         // 这里switch里面加括号是为了下面所有变量都叫v
         case DOUBLE:{
@@ -33,18 +43,26 @@ Value::Value(const Value & value){
         }
         }
     }
+
 }
-Value::Value(double value){
-    addValue(value);
-}
-Value::Value(QString value){
-    addValue(value);
+Value & Value::operator =(const Value& value){
+    clear();
+    copy(value); // 直接调用拷贝构造函数重新赋值就行。
+    return *this; //记得返回自己，是左值，所以为了递归
 }
 
-//Value & Value::operator =(const Value& value){
-//    clear();
-//    for (int i = 0;i<value.getSize();
-//}
+Value & Value::operator =(const double & value){
+   clear();
+   addValue(value);
+   return *this;
+}
+
+Value & Value::operator =(const QString & value){
+    clear();
+    addValue(value);
+    return *this;
+}
+
 Value::~Value(){
     for (int i =0;i<valuelist.size();i++){
         switch (typelist[i]) {
