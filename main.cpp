@@ -13,15 +13,12 @@ int main(int argc, char *argv[])
     v.addValue(15.4);
     v.addValue("hello");
     v.addValue(v);
-//    v.print();
-    cout << endl;
-    Value x;
-//    x.print();
-    cout <<endl;
-    Value z;
-    z.addValue(12);
-//    z.print();
-    cout<<endl;
-
+    v.print();
+    v.setValue(0,15);
+    v.setValue(1,11.5);
+    v.setValue(2,"hel");
+    v.print();
+    v.setValue(3,v);
+    v.print();
     return a.exec();
 }

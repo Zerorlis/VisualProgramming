@@ -12,6 +12,7 @@ Value::Value()
 {
 
 }
+
 Value::Value(const Value & value){
     copy(value);
 }
@@ -19,8 +20,17 @@ Value::Value(const Value & value){
 Value::Value(double value){
     addValue(value);
 }
+
 Value::Value(QString value){
     addValue(value);
+}
+
+Value::Value(bool value){
+    if(value){
+        addValue(1.0);
+    }else{
+        addValue(0.0);
+    }
 }
 
 void Value::copy(const Value&value){
@@ -47,33 +57,37 @@ void Value::copy(const Value&value){
 
 }
 
-bool Value:: operator bool() const{
+Value:: operator bool() const{
     if (getSize()==1){
         switch (typelist[0]) {
-        case DOUBLE:
+        case DOUBLE:{
             double v = *static_cast<double*>(valuelist[0]);
             if (v!=0)
                 return false;
             else
                 return true;
             break;
-        case STRING:
+        }
+        case STRING:{
             QString v = *static_cast<QString*>(valuelist[0]);
             if (v.isEmpty())
                 return false;
             else
                 return true;
+            break;
+        }
         case LIST:
             return true;
+            break;
         default:
             return false;
             break;
         }
     }else if(getSize()==0){
         return false;
-    }else{
-        return true;
     }
+        return true;
+
 }
 
 bool Value::operator ==(const Value & value) const{
@@ -117,32 +131,25 @@ bool Value::operator ==(const Value & value) const{
 }
 
 bool Value::operator !=(const Value & value) const{
-    return !(*this==value)
+    return !(*this==value);
 }
-
 
 Value & Value::operator =(const Value& value){
     if (this == &value){
         return *this;
     }
     clear();
-    copy(value); // 直接调用拷贝构造函数重新赋值就行。
+    copy(value);
     return *this; //记得返回自己，是左值，所以为了能多次
 }
 
 Value & Value::operator =(const double & value){
-    if(this == &value){
-        return *this;
-    }
     clear();
     addValue(value);
     return *this;
 }
 
 Value & Value::operator =(const QString & value){
-    if(this == &value){
-        return *this;
-    }
     clear();
     addValue(value);
     return *this;
@@ -171,25 +178,132 @@ Value::~Value(){
 
 }
 
+Value::refValue::refValue( Value *value, int position):val(value),pos(position){
 
-Value Value::operator [](int i) const {
-    if (i<0 || i> getSize())
+}
+
+Value::refValue & Value::refValue::operator =(const Value & value){
+    val->setValue(pos,value);
+    return *this;
+}
+
+Value::refValue & Value::refValue::operator =(const double & value){
+    val->setValue(pos,value);
+    return *this;
+}
+
+Value::refValue & Value::refValue::operator =(const QString & value){
+    val->setValue(pos,value);
+    return *this;
+}
+
+Value::refValue::operator Value() const{
+     if (pos<0 || pos> val->getSize())
         return Value();
-    switch (typelist[i]) {
+    switch (val->typelist[pos]) {
     case DOUBLE:
-        return Value(*static_cast<double *>(valuelist[i]));
+        return Value(*static_cast<double *>(val->valuelist[pos]));
         break;
     case STRING:
-        return Value(*static_cast<QString*>(valuelist[i]));
+        return Value(*static_cast<QString*>(val->valuelist[pos]));
         break;
     case LIST:
-        return Value(*static_cast<Value *> (valuelist[i]));
+        return Value(*static_cast<Value *> (val->valuelist[pos]));
     default:
         return Value();
         break;
     }
+
 }
 
+void Value::setValue(int i, const double value){
+    if (i < 0 || i > valuelist.size()-1){
+        return ;
+    }
+    switch (typelist[i]) {
+    case DOUBLE:{
+        double * v = static_cast<double *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case STRING:{
+        QString * v = static_cast<QString*>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case LIST:{
+        Value * v = static_cast<Value *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    }
+    typelist[i]=DOUBLE;
+    valuelist[i]=static_cast<void*>(new double{value});
+}
+
+void Value::setValue(int i, const QString & value){
+    if (i < 0 || i > valuelist.size()-1){
+        return ;
+    }
+    switch (typelist[i]) {
+    case DOUBLE:{
+        double * v = static_cast<double *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case STRING:{
+        QString * v = static_cast<QString*>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case LIST:{
+        Value * v = static_cast<Value *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    }
+    typelist[i]=STRING;
+    valuelist[i]=static_cast<void*>(new QString(value));
+}
+
+void Value::setValue(int i, const Value & value){
+    if (i < 0 || i > valuelist.size()-1){
+        return ;
+    }
+    // 先保存一遍value的值，因为可能会添加自己，导致自己变了
+    Value * self = NULL;
+    if (this==&value){
+        self = new Value(value);
+    }
+    switch (typelist[i]) {
+    case DOUBLE:{
+        double * v = static_cast<double *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case STRING:{
+        QString * v = static_cast<QString*>(valuelist[i]);
+        delete v;
+        break;
+    }
+    case LIST:{
+        Value * v = static_cast<Value *>(valuelist[i]);
+        delete v;
+        break;
+    }
+    }
+    typelist[i]=LIST;
+    if(this==&value){
+        valuelist[i]=static_cast<void*>(self);
+    }else{
+        valuelist[i]=static_cast<void*>(new Value(value));
+
+    }
+}
+
+Value::refValue Value::operator [](int i){
+    return refValue(this,i);
+}
 
 void Value::addValue(const double  value){
     double * i = new double{value};
@@ -208,8 +322,9 @@ void Value::addValue(const Value & value){
     valuelist.append(static_cast<void * >(i));
     typelist.append(LIST);
 }
+
 void Value::deleteValue(int i){
-    if (i < 0 && i > valuelist.size()-1){
+    if (i < 0 || i > valuelist.size()-1){
         return ;
     }
     switch (typelist[i]) {
@@ -305,8 +420,6 @@ Value::operator QString() const {
     }
 }
 
-
-
 int Value::getSize()const {
     return typelist.size();
 }
@@ -318,6 +431,7 @@ Value::type Value::getType() const{
         return LIST;
     }
 }
+
 QString Value::getDate(char f, int prec) const{
     QString q;
     //当只有double，string单个元素的时候，不输出前后的括号
@@ -361,4 +475,8 @@ QString Value::getDate(char f, int prec) const{
         q.append(']');
     }
     return q;
+}
+
+void Value::print() const{
+    std::cout<<getDate().toStdString().data()<<std::endl;
 }

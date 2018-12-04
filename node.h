@@ -23,16 +23,36 @@ private:
 private:
     QVector<void *> valuelist; ///< 用于保存值，用void指针指着
     QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
+    ///
+    /// \brief The ref class ,一个代理类，用于[]的返回值的赋值和给值操作
+    ///
+    class refValue{
+    private:
+        Value * val;
+        int pos;
+    public:
+        refValue( Value * val, int pos);
+        refValue & operator = (const Value & value); //处理[]= 赋值用
+        refValue & operator = (const double & value);
+        refValue & operator = (const QString & value);
+        operator Value() const; // 处理[]
+    };
 public:
     Value();
     Value(const Value & value); /// 拷贝构造函数，策略是一个Value内的对象都是自己的，不公用，还需重载等号的拷贝函数
     Value(double value);
     Value(QString value);
+    explicit Value(bool value);
     virtual ~Value();
     Value & operator = (const Value & value);
     Value & operator = (const double & value);
     Value & operator = (const QString & value);
-    Value operator [] (int i) const;
+    ///
+    /// \brief operator []
+    /// \param i 位置
+    /// \return 返回一个代理类，这个类和这个Value对象链接，访问的时候会自动转化为Value，value有更新的时候会跟着更新，可以对其赋值
+    /// 但是放问value的内容需要具体的内容需要使用显式转换,返回都是Value的形式。
+    refValue operator [] (int i);
     bool operator == (const Value & value) const;
     bool operator != (const Value & value) const;
     operator bool() const;
@@ -104,21 +124,21 @@ public:
     /// \param i 第几个值，只能在为正数
     /// \param value double 要设置的值
     ///
-    void setValue(int i, double value);
+    void setValue(int i, const double value);
 
     ///
     /// \brief setValue 设置第i个变量为Value,当i不对的时候就什么都不做
     /// \param i 第几个值，只能在为正数
     /// \param value QString要设置的值
     ///
-    void setValue(int i, QString value);
+    void setValue(int i, const QString & value);
 
     ///
     /// \brief setValue 设置第i个变量为Value,当i不对的时候就什么都不做
     /// \param i 第几个值，只能在为正数
     /// \param value Value 要设置的值
     ///
-    void setValue(int i, Value value);
+    void setValue(int i, const Value & value);
 
     ///
     /// \brief deleteValue 删除第i个值，当i不对什么都不做
@@ -136,6 +156,7 @@ public:
     /// \return LIST,DOUBLE,STRING，class内部的枚举类型
     ///
     type getType() const;
+    void print() const;
 
 private:
     void copy(const Value & value); // 提供拷贝构造函数和=重载使用
