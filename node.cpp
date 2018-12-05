@@ -33,9 +33,9 @@ Value::Value(const char * const value){
     addValue(QString(value));
 }
 
-Value::Value(const char value){
-    addValue(QString(value));
-}
+//Value::Value(const char value){
+//    addValue(QString(value));
+//}
 
 Value::Value(const int value){
     addValue(double(value));
@@ -267,9 +267,9 @@ Value & Value::operator = (const char * const value){
     return operator=(QString(value));
 }
 
-Value & Value::operator = (const char value){
-    return operator=(QString(value));
-}
+//Value & Value::operator = (const char value){
+//    return operator=(QString(value));
+//}
 
 Value::refValue Value::operator [](int i){
     return refValue(this,i);
@@ -310,10 +310,10 @@ Value::refValue & Value::refValue::operator =(const char* const value){
     return *this;
 }
 
-Value::refValue & Value::refValue::operator =(const char value){
-    val->setValue(pos,QString(value));
-    return *this;
-}
+//Value::refValue & Value::refValue::operator =(const char value){
+//    val->setValue(pos,QString(value));
+//    return *this;
+//}
 
 Value::refValue::operator Value() const{
     return val->getValue(pos);
@@ -435,9 +435,9 @@ void Value::setValue(int i, const char * const value){
     setValue(i,QString(value));
 }
 
-void Value::setValue(int i, const char value){
-    setValue(i,QString(value));
-}
+//void Value::setValue(int i, const char value){
+//    setValue(i,QString(value));
+//}
 
 void Value::addValue(const double  value){
     double * i = new double{value};
@@ -461,9 +461,9 @@ void Value::addValue(const char *value){
     addValue(QString(value));
 }
 
-void Value::addValue(const char value){
-    addValue(QString(value));
-}
+//void Value::addValue(const char value){
+//    addValue(QString(value));
+//}
 
 void Value::addValue(const bool value){
     addValue(double(value));

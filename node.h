@@ -37,7 +37,7 @@ private:
         refValue & operator = (const QString & value);
         refValue & operator = (const int value);
         refValue & operator = (const char * const value);
-        refValue & operator = (const char value);
+//        refValue & operator = (const char value);
         refValue & operator = (const bool value);
         operator Value() const; // 处理[]
     };
