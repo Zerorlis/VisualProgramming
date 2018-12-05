@@ -30,6 +30,11 @@ Value::Value(const char * const value){
     addValue(QString(value));
 }
 
+Value::Value(const int value){
+    addValue(double(value));
+}
+
+
 Value::~Value(){
     for (int i =0;i<valuelist.size();i++){
         switch (typelist[i]) {
@@ -216,6 +221,10 @@ Value & Value::operator =(const QString & value){
 Value & Value::operator = (const char * const value){
     return operator=(QString(value));
 }
+
+Value & Value::operator=(const int value){
+    return operator =(double(value));
+}
 Value::refValue Value::operator [](int i){
     return refValue(this,i);
 }
@@ -242,6 +251,10 @@ Value::refValue & Value::refValue::operator =(const QString & value){
 
 Value::refValue & Value::refValue::operator =(const char* const value){
     val->setValue(pos,QString(value));
+    return *this;
+}
+Value::refValue & Value::refValue::operator =(const int value){
+    val->setValue(pos,double(value));
     return *this;
 }
 
@@ -356,6 +369,9 @@ void Value::setValue(int i, const Value & value){
 void Value::setValue(int i, const char * const value){
     setValue(i,QString(value));
 }
+void Value::setValue(int i, const int value){
+    setValue(i,double(value));
+}
 
 void Value::addValue(const double  value){
     double * i = new double{value};
@@ -378,7 +394,9 @@ void Value::addValue(const Value & value){
 void Value::addValue(const char *value){
     addValue(QString(value));
 }
-
+void Value::addValue(const int value){
+    addValue(double(value));
+}
 void Value::deleteValue(int i){
     if (i < 0 || i > valuelist.size()-1){
         return ;

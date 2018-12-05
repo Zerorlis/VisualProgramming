@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     }
     cout <<"测试[]=\n";
     v.print();
-    v[0] = 1;
+    v[0] = 0;
     v[1] = 'h';
 //    v[2] = "String";
     v[3] = QString("he");

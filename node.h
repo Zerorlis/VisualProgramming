@@ -36,6 +36,7 @@ private:
         refValue & operator = (const double  value);
         refValue & operator = (const QString & value);
         refValue & operator = (const char * const value);
+        refValue & operator = (const int value);
         operator Value() const; // 处理[]
     };
 public:
@@ -44,12 +45,14 @@ public:
     Value(const double value);
     Value(const QString & value);
     Value(const char* const value); // 指针会在没有匹配的时候匹配到整数值的函数，bool的话就成功了，int会报错
+    Value(const int value); // 为了防止0的时候，走上面的那个函数。
 
     virtual ~Value();
     Value & operator = (const Value & value);
     Value & operator = (const double value);
     Value & operator = (const QString & value);
     Value & operator = (const char * const value);
+    Value & operator = (const int value);
     ///
     /// \brief operator []
     /// \param i 位置
@@ -106,6 +109,7 @@ public:
     void addValue(const QString & value);
     void addValue(const Value & value);
     void addValue(const char* const value);
+    void addValue(const int value);
 
 
     ///
@@ -117,6 +121,7 @@ public:
     void setValue(int i, const QString & value);
     void setValue(int i, const Value & value);
     void setValue(int i, const char* const value);
+    void setValue(int i, const int value);
 
     ///
     /// \brief getValue 获得某个位置的值，以一个Value形式弄出
