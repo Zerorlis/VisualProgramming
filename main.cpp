@@ -10,6 +10,10 @@ void boolcout(bool i){
     cout << "boolcout "<< i << endl;
 }
 
+void charpcout(const char * i){
+    cout << i << endl;
+}
+
 int main(int argc, char *argv[])
 {
     using namespace std;
@@ -29,7 +33,7 @@ int main(int argc, char *argv[])
     v.print();
     Value b1 = v;
     b1.print();
-    Value b2 = 5.2;
+    Value b2 = 5;
     b2.print();
     Value b3 ="55.5";
     b3.print();
@@ -109,11 +113,24 @@ int main(int argc, char *argv[])
     Value g = v;
     v=5;
     Value h =8;
-    Value i = 7;
-    cout << h * i;
+    cout << h * 5.0 <<endl;
 
     intcout(v);
-    boolcout(v);
 
+    cout << "isempty\n";
+
+    Value i = 0;
+    Value j;
+    cout << h.isEmpty() << endl;
+    cout << i.isEmpty() << endl;
+    cout << j.isEmpty() << endl;
+    Value k("");
+    cout <<k.isEmpty() << endl;
+
+    cout << "当一个bool的输出\n";
+    boolcout(h);
+    boolcout(i);
+    boolcout(j);
+    boolcout(k);
     return a.exec();
 }

@@ -25,20 +25,9 @@ Value::Value(const QString & value){
     addValue(value);
 }
 
-//Value::Value(const bool value){
-//    addValue(double(value));
-//}
 
 Value::Value(const char * const value){
     addValue(QString(value));
-}
-
-//Value::Value(const char value){
-//    addValue(QString(value));
-//}
-
-Value::Value(const int value){
-    addValue(double(value));
 }
 
 Value::~Value(){
@@ -146,41 +135,12 @@ QString Value::toQString()const{
 
 }
 
-//Value:: operator bool() const{
-//    return toBool();
-//}
 
 bool Value::toBool()const{
-//     if (getSize()==1){
-//        switch (typelist[0]) {
-//        case DOUBLE:{
-//            double v = *static_cast<double*>(valuelist[0]);
-//            return bool(v);
-//            break;
-//        }
-//        case STRING:{
-//            QString v = *static_cast<QString*>(valuelist[0]);
-//            return true;
-//            break;
-//        }
-//        case LIST:
-//            return true;
-//            break;
-//        default:
-//            return false;
-//            break;
-//        }
-//    }else if(getSize()==0){
-//        return false;
-//    }
-//        return true;
     return bool(toDouble());
 
 }
 
-//Value::operator int() const {
-//    return toInt();
-//}
 int Value::toInt() const{
     return int(toDouble());
 }
@@ -252,22 +212,10 @@ Value & Value::operator =(const QString & value){
     return *this;
 }
 
-//Value & Value::operator =(const bool value){
-//   return operator =(double(value));
-//}
-
-//Value & Value::operator =(const int value){
-//   return operator=(double(value));
-//}
 
 Value & Value::operator = (const char * const value){
     return operator=(QString(value));
 }
-
-//Value & Value::operator = (const char value){
-//    return operator=(QString(value));
-//}
-
 Value::refValue Value::operator [](int i){
     return refValue(this,i);
 }
@@ -292,25 +240,10 @@ Value::refValue & Value::refValue::operator =(const QString & value){
     return *this;
 }
 
-//Value::refValue & Value::refValue::operator =(const int value){
-//    val->setValue(pos, value);
-//    return *this;
-//}
-
-//Value::refValue & Value::refValue::operator =(const bool value){
-//    val->setValue(pos,double(value));
-//    return *this;
-//}
-
 Value::refValue & Value::refValue::operator =(const char* const value){
     val->setValue(pos,QString(value));
     return *this;
 }
-
-//Value::refValue & Value::refValue::operator =(const char value){
-//    val->setValue(pos,QString(value));
-//    return *this;
-//}
 
 Value::refValue::operator Value() const{
     return val->getValue(pos);
@@ -420,21 +353,9 @@ void Value::setValue(int i, const Value & value){
     }
 }
 
-//void Value::setValue(int i, const bool value){
-//    setValue(i,double(value));
-//}
-
-//void Value::setValue(int i, const int value){
-//    setValue(i,double(value));
-//}
-
 void Value::setValue(int i, const char * const value){
     setValue(i,QString(value));
 }
-
-//void Value::setValue(int i, const char value){
-//    setValue(i,QString(value));
-//}
 
 void Value::addValue(const double  value){
     double * i = new double{value};
@@ -457,18 +378,6 @@ void Value::addValue(const Value & value){
 void Value::addValue(const char *value){
     addValue(QString(value));
 }
-
-//void Value::addValue(const char value){
-//    addValue(QString(value));
-//}
-
-//void Value::addValue(const bool value){
-//    addValue(double(value));
-//}
-
-//void Value::addValue(const int value){
-//    addValue(double(value));
-//}
 
 void Value::deleteValue(int i){
     if (i < 0 || i > valuelist.size()-1){
