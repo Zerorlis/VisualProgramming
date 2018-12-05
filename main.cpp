@@ -14,11 +14,27 @@ int main(int argc, char *argv[])
     v.addValue(15.4);
     v.addValue("hello");
     v.addValue(v);
+    v.addValue(true);
+    v.addValue('h');
+    v.addValue(QString(""));
     v.print();
     cout<< "测试拷贝构造函数\n";
-    Value b = v;
     v.print();
-    b.print();
+    Value b1 = v;
+    b1.print();
+    Value b2 = 5.2;
+    b2.print();
+    Value b3 ="55.5";
+    b3.print();
+    Value b4 = true;
+    b4.print();
+    Value b5 = 'h';
+    b5.print();
+    Value b6 = 8;
+    b6.print();
+    Value b7 = QString();
+    b7.print();
+
 
     cout << "测试赋值符号";
     Value c;
@@ -29,19 +45,46 @@ int main(int argc, char *argv[])
     c.print();
     c="efsdf";
     c.print();
+    c=true;
+    c.print();
+    c=1.0;
+    c.print();
+    c=QString("hello");
+    c.print();
+    c='h';
+    c.print();
+
+
+    cout << "测试clear\n";
+    Value d = v;
+    d.print();
+    d.clear();
+    d.print();
 
     cout << "测试set函数\n";
-    v.print();
-    v.setValue(0,15);
-    v.setValue(1,11.5);
-    v.setValue(2,"hel");
-    v.setValue(3,v);
-    v.print();
+    Value e(v);
+    e.print();
+    e.setValue(0,15);
+    e.setValue(1,11.5);
+    e.setValue(2,"hel");
+    e.setValue(3,v);
+    e.setValue(4,'7');
+    e.setValue(5,"helo");
+    e.setValue(6,QString("hl"));
+    e.print();
 
-    cout<< "测试delete";
-    v.print();
-    v.deleteValue(2);
-    v.print();
+    cout<< "测试delete\n";
+    Value f(v);
+    f.print();
+    f.deleteValue(2);
+    f.print();
 
+    cout << "测试[]";
+    v.print();
+    for (int i=0;i<v.getSize();i++){
+    ((Value)v[i]).print();
+    }
+    cout <<"测试[]=";
+    v.print();
     return a.exec();
 }

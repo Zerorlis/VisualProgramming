@@ -17,20 +17,51 @@ Value::Value(const Value & value){
     copy(value);
 }
 
-Value::Value(double value){
+Value::Value(const double value){
     addValue(value);
 }
 
-Value::Value(QString value){
+Value::Value(const QString & value){
     addValue(value);
 }
 
-Value::Value(bool value){
-    if(value){
-        addValue(1.0);
-    }else{
-        addValue(0.0);
+Value::Value(const bool value){
+    addValue(double(value));
+}
+
+Value::Value(const char * const value){
+    addValue(QString(value));   
+}
+
+Value::Value(const char value){
+    addValue(QString(value));
+}
+
+Value::Value(const int value){
+    addValue(double(value));
+}
+
+Value::~Value(){
+    for (int i =0;i<valuelist.size();i++){
+        switch (typelist[i]) {
+        case DOUBLE:{
+            double * v = static_cast<double *>(valuelist[i]);
+            delete v;
+            break;
+        }
+        case STRING:{
+            QString * v = static_cast<QString*>(valuelist[i]);
+            delete v;
+            break;
+        }
+        case LIST:{
+            Value * v = static_cast<Value *>(valuelist[i]);
+            delete v;
+            break;
+        }
+        }
     }
+
 }
 
 void Value::copy(const Value&value){
@@ -55,6 +86,52 @@ void Value::copy(const Value&value){
         }
     }
 
+}
+
+Value::operator double() const {
+    // 当size只有1的时候
+    if (valuelist.size()==1){
+        switch (typelist[0]) {
+        case DOUBLE:
+            return *(static_cast<double *>(valuelist[0]));
+            break;
+        case STRING:{
+            bool b = true;
+            QString* v = static_cast<QString *>(valuelist[0]);
+            double r = v->toDouble(&b);
+            if(b){
+                //转化成功
+                return r;
+            }else{
+                return DBL_MAX;
+            }
+        }
+            break;
+        default:
+            return DBL_MAX;
+            break;
+        }
+    }else{
+        return DBL_MAX;
+    }
+}
+
+Value::operator QString() const {
+    if(valuelist.size()==1){
+        switch (typelist[0]) {
+        case DOUBLE:
+            return QString::number(*(static_cast<double*>(valuelist[0])));
+            break;
+        case STRING:
+            return *static_cast<QString*>(valuelist[0]); //返回值为一个表达式的结果，所以不是那块内存，而是一个临时对象，会调用拷贝构造函数
+            break;
+        default:
+            return QString("");
+            break;
+        }
+    }else{
+        return QString("");
+    }
 }
 
 Value:: operator bool() const{
@@ -110,7 +187,7 @@ bool Value::operator ==(const Value & value) const{
         case STRING:{
             QString& v1 = *static_cast<QString*>(valuelist[i]);
             QString& v2 = *static_cast<QString*>(value.valuelist[i]);
-            if(!(v1==v2)){
+            if(v1!=v2){
                 return false;
             }
             break;
@@ -118,7 +195,7 @@ bool Value::operator ==(const Value & value) const{
         case LIST:{
             Value & v1 = *static_cast<Value*>(valuelist[i]);
             Value & v2 = *static_cast<Value*>(value.valuelist[i]);
-            if(!(v1==v2)){
+            if(v1!=v2){
                 return false;
             }
             break;
@@ -143,7 +220,7 @@ Value & Value::operator =(const Value& value){
     return *this; //记得返回自己，是左值，所以为了能多次
 }
 
-Value & Value::operator =(const double & value){
+Value & Value::operator =(const double value){
     clear();
     addValue(value);
     return *this;
@@ -155,28 +232,26 @@ Value & Value::operator =(const QString & value){
     return *this;
 }
 
-Value::~Value(){
-    for (int i =0;i<valuelist.size();i++){
-        switch (typelist[i]) {
-        case DOUBLE:{
-            double * v = static_cast<double *>(valuelist[i]);
-            delete v;
-            break;
-        }
-        case STRING:{
-            QString * v = static_cast<QString*>(valuelist[i]);
-            delete v;
-            break;
-        }
-        case LIST:{
-            Value * v = static_cast<Value *>(valuelist[i]);
-            delete v;
-            break;
-        }
-        }
-    }
-
+Value & Value::operator =(const bool value){
+   return operator =(double(value));
 }
+
+Value & Value::operator =(const int value){
+   return operator=(double(value));
+}
+
+Value & Value::operator = (const char * const value){
+    return operator=(QString(value));
+}
+
+Value & Value::operator = (const char value){
+    return operator=(QString(value));
+}
+
+Value::refValue Value::operator [](int i){
+    return refValue(this,i);
+}
+
 
 Value::refValue::refValue( Value *value, int position):val(value),pos(position){
 
@@ -187,7 +262,7 @@ Value::refValue & Value::refValue::operator =(const Value & value){
     return *this;
 }
 
-Value::refValue & Value::refValue::operator =(const double & value){
+Value::refValue & Value::refValue::operator =(const double  value){
     val->setValue(pos,value);
     return *this;
 }
@@ -197,18 +272,42 @@ Value::refValue & Value::refValue::operator =(const QString & value){
     return *this;
 }
 
+Value::refValue & Value::refValue::operator =(const int value){
+    val->setValue(pos, value);
+    return *this;
+}
+
+Value::refValue & Value::refValue::operator =(const bool value){
+    val->setValue(pos,double(value));
+    return *this;
+}
+
+Value::refValue & Value::refValue::operator =(const char* const value){
+    val->setValue(pos,QString(value));
+    return *this;
+}
+
+Value::refValue & Value::refValue::operator =(const char value){
+    val->setValue(pos,QString(value));
+    return *this;
+}
+
 Value::refValue::operator Value() const{
-     if (pos<0 || pos> val->getSize())
+    return val->getValue(pos);
+}
+
+Value Value::getValue(int i) const{
+    if (i<0 || i >  getSize()-1)
         return Value();
-    switch (val->typelist[pos]) {
+    switch (typelist[i]) {
     case DOUBLE:
-        return Value(*static_cast<double *>(val->valuelist[pos]));
+        return Value(*static_cast<double *>(valuelist[i]));
         break;
     case STRING:
-        return Value(*static_cast<QString*>(val->valuelist[pos]));
+        return Value(*static_cast<QString*>(valuelist[i]));
         break;
     case LIST:
-        return Value(*static_cast<Value *> (val->valuelist[pos]));
+        return Value(*static_cast<Value *> (valuelist[i]));
     default:
         return Value();
         break;
@@ -301,8 +400,20 @@ void Value::setValue(int i, const Value & value){
     }
 }
 
-Value::refValue Value::operator [](int i){
-    return refValue(this,i);
+void Value::setValue(int i, const bool value){
+    setValue(i,double(value));
+}
+
+void Value::setValue(int i, const int value){
+    setValue(i,double(value));
+}
+
+void Value::setValue(int i, const char * const value){
+    setValue(i,QString(value));
+}
+
+void Value::setValue(int i, const char value){
+    setValue(i,QString(value));
 }
 
 void Value::addValue(const double  value){
@@ -321,6 +432,22 @@ void Value::addValue(const Value & value){
     Value *  i = new Value(value);
     valuelist.append(static_cast<void * >(i));
     typelist.append(LIST);
+}
+
+void Value::addValue(const char *value){
+    addValue(QString(value));
+}
+
+void Value::addValue(const char value){
+    addValue(QString(value));
+}
+
+void Value::addValue(const bool value){
+    addValue(double(value));
+}
+
+void Value::addValue(const int value){
+    addValue(double(value));
 }
 
 void Value::deleteValue(int i){
@@ -372,52 +499,6 @@ void Value::clear(){
     }
     typelist.clear();
     valuelist.clear();
-}
-
-Value::operator double() const {
-    // 当size只有1的时候
-    if (valuelist.size()==1){
-        switch (typelist[0]) {
-        case DOUBLE:
-            return *(static_cast<double *>(valuelist[0]));
-            break;
-        case STRING:{
-            bool b = true;
-            QString* v = static_cast<QString *>(valuelist[0]);
-            double r = v->toDouble(&b);
-            if(b){
-                //转化成功
-                return r;
-            }else{
-                return DBL_MAX;
-            }
-        }
-            break;
-        default:
-            return DBL_MAX;
-            break;
-        }
-    }else{
-        return DBL_MAX;
-    }
-}
-
-Value::operator QString() const {
-    if(valuelist.size()==1){
-        switch (typelist[0]) {
-        case DOUBLE:
-            return QString::number(*(static_cast<double*>(valuelist[0])));
-            break;
-        case STRING:
-            return *static_cast<QString*>(valuelist[0]); //返回值为一个表达式的结果，所以不是那块内存，而是一个临时对象，会调用拷贝构造函数
-            break;
-        default:
-            return QString("");
-            break;
-        }
-    }else{
-        return QString("");
-    }
 }
 
 int Value::getSize()const {
