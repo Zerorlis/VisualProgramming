@@ -46,9 +46,9 @@ public:
     Value(const Value & value); /// 拷贝构造函数，策略是一个Value内的对象都是自己的，不公用，还需重载等号的拷贝函数
     Value(const double value);
     Value(const QString & value);
-    Value(const bool value);
-    Value(const char* const value); // 一定要有这个，否则char数组竟然自动转化为bool,定义多一点，保证准确。
-    Value(const char value);
+    explicit Value(const bool value);
+    Value(const char* const value); // 一定要有这个，否则char数组竟然自动转化为int或者bool这些代表整数的动作,也就是指针也会做提升定义多一点，保证准确。
+//    Value(const char value);
     Value(const int value);
     virtual ~Value();
     Value & operator = (const Value & value);
@@ -56,7 +56,7 @@ public:
     Value & operator = (const QString & value);
     Value & operator = (const bool value);
     Value & operator = (const char * const value);
-    Value & operator = (const char value);
+//    Value & operator = (const char value);
     Value & operator = (const int value);
     ///
     /// \brief operator []
@@ -67,8 +67,8 @@ public:
     bool operator == (const Value & value) const;
     bool operator != (const Value & value) const;
 
-    operator bool() const;
-    operator int() const;
+    explicit operator bool() const;
+    explicit operator int() const;
 
 
     ///
@@ -116,7 +116,7 @@ public:
     void addValue(const QString & value);
     void addValue(const Value & value);
     void addValue(const char* const value);
-    void addValue(const char value);
+//    void addValue(const char value);
     void addValue(const bool value);
     void addValue(const int value);
 
@@ -130,7 +130,7 @@ public:
     void setValue(int i, const QString & value);
     void setValue(int i, const Value & value);
     void setValue(int i, const char* const value);
-    void setValue(int i, const char value);
+//    void setValue(int i, const char value);
     void setValue(int i, const bool value);
     void setValue(int i, const int value);
 
@@ -164,6 +164,10 @@ public:
     ///
     type getType() const;
     void print() const;
+    bool toBool() const;
+    double toDouble() const;
+    QString toQString() const;
+    int toInt() const;
 
 private:
     void copy(const Value & value); // 提供拷贝构造函数和=重载使用

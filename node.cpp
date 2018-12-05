@@ -30,7 +30,7 @@ Value::Value(const bool value){
 }
 
 Value::Value(const char * const value){
-    addValue(QString(value));   
+    addValue(QString(value));
 }
 
 Value::Value(const char value){
@@ -89,6 +89,11 @@ void Value::copy(const Value&value){
 }
 
 Value::operator double() const {
+    return toDouble();
+}
+
+
+double Value::toDouble() const{
     // 当size只有1的时候
     if (valuelist.size()==1){
         switch (typelist[0]) {
@@ -103,20 +108,26 @@ Value::operator double() const {
                 //转化成功
                 return r;
             }else{
-                return DBL_MAX;
+                return 0;
             }
         }
             break;
         default:
-            return DBL_MAX;
+            return 0;
             break;
         }
     }else{
-        return DBL_MAX;
+        return 0;
     }
+
 }
 
 Value::operator QString() const {
+    return toQString();
+}
+
+QString Value::toQString()const{
+
     if(valuelist.size()==1){
         switch (typelist[0]) {
         case DOUBLE:
@@ -132,17 +143,19 @@ Value::operator QString() const {
     }else{
         return QString("");
     }
+
 }
 
 Value:: operator bool() const{
-    if (getSize()==1){
+    return toBool();
+}
+
+bool Value::toBool()const{
+     if (getSize()==1){
         switch (typelist[0]) {
         case DOUBLE:{
             double v = *static_cast<double*>(valuelist[0]);
-            if (v!=0)
-                return false;
-            else
-                return true;
+            return bool(v);
             break;
         }
         case STRING:{
@@ -165,9 +178,19 @@ Value:: operator bool() const{
     }
         return true;
 
+
+}
+
+Value::operator int() const {
+    return toInt();
+}
+int Value::toInt() const{
+    return int(toDouble());
 }
 
 bool Value::operator ==(const Value & value) const{
+    if (this==&value)
+        return true;
     if(getSize()!=value.getSize()){
         return false;
     }

@@ -3,6 +3,13 @@
 #include "node.h"
 using namespace std;
 
+void intcout(int i){
+    cout << "intcout "<< i << endl;
+}
+void boolcout(bool i){
+    cout << "boolcout "<< i << endl;
+}
+
 int main(int argc, char *argv[])
 {
     using namespace std;
@@ -79,12 +86,34 @@ int main(int argc, char *argv[])
     f.deleteValue(2);
     f.print();
 
-    cout << "测试[]";
+    cout << "测试[]\n";
     v.print();
     for (int i=0;i<v.getSize();i++){
     ((Value)v[i]).print();
     }
-    cout <<"测试[]=";
+    cout <<"测试[]=\n";
     v.print();
+    v[0] = 1;
+    v[1] = 'h';
+    v[2] = "String";
+    v[3] = QString("he");
+    v[4] = 8.0;
+    v[5] = v;
+    v[6] = true;
+    v.print();
+//    todo:
+//    v[5][1]='helo';
+//    v.print();
+
+    cout<< "测试类型转化\n";
+    Value g = v;
+    v=5;
+    Value h =8;
+    Value i = 7;
+    cout << h * 7;
+
+    intcout(v);
+    boolcout(v);
+
     return a.exec();
 }
