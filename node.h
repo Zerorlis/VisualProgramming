@@ -47,9 +47,10 @@ public:
     Value(const double value);
     Value(const QString & value);
 //    Value(const bool value);
-    Value(const char* const value); // 一定要有这个，否则char数组竟然自动转化为int或者bool这些代表整数的动作,也就是指针也会做提升定义多一点，保证准确。
+    Value(const char* const value); // 指针会在没有匹配的时候匹配到整数值的函数，bool的话就成功了，int会报错
+
 //    Value(const char value);
-//    Value(const int value);
+    Value(const int value);
     virtual ~Value();
     Value & operator = (const Value & value);
     Value & operator = (const double value);
@@ -165,9 +166,14 @@ public:
     type getType() const;
     void print() const;
     bool toBool() const;
-    double toDouble() const;
-    QString toQString() const;
+    double toDouble() const; //QString和double可以互相转化，转化失败返回0，list返回0
+    QString toQString() const; // QString和double可以互相转化，list返回空
     int toInt() const;
+    ///
+    /// \brief isEmpty 这个字符串是不是空的，如果是数字，返回true，如果是list,空的list返回true，否则返回false
+    /// \return
+    ///
+    bool isEmpty() const;
 
 private:
     void copy(const Value & value); // 提供拷贝构造函数和=重载使用

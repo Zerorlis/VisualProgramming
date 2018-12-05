@@ -37,9 +37,9 @@ Value::Value(const char * const value){
 //    addValue(QString(value));
 //}
 
-//Value::Value(const int value){
-//    addValue(double(value));
-//}
+Value::Value(const int value){
+    addValue(double(value));
+}
 
 Value::~Value(){
     for (int i =0;i<valuelist.size();i++){
@@ -151,30 +151,30 @@ QString Value::toQString()const{
 //}
 
 bool Value::toBool()const{
-     if (getSize()==1){
-        switch (typelist[0]) {
-        case DOUBLE:{
-            double v = *static_cast<double*>(valuelist[0]);
-            return bool(v);
-            break;
-        }
-        case STRING:{
-            QString v = *static_cast<QString*>(valuelist[0]);
-            return true;
-            break;
-        }
-        case LIST:
-            return true;
-            break;
-        default:
-            return false;
-            break;
-        }
-    }else if(getSize()==0){
-        return false;
-    }
-        return true;
-
+//     if (getSize()==1){
+//        switch (typelist[0]) {
+//        case DOUBLE:{
+//            double v = *static_cast<double*>(valuelist[0]);
+//            return bool(v);
+//            break;
+//        }
+//        case STRING:{
+//            QString v = *static_cast<QString*>(valuelist[0]);
+//            return true;
+//            break;
+//        }
+//        case LIST:
+//            return true;
+//            break;
+//        default:
+//            return false;
+//            break;
+//        }
+//    }else if(getSize()==0){
+//        return false;
+//    }
+//        return true;
+    return bool(toDouble());
 
 }
 
@@ -530,6 +530,25 @@ Value::type Value::getType() const{
        return typelist[0];
     }else{
         return LIST;
+    }
+}
+
+bool Value::isEmpty() const{
+    if(typelist.size()==1){
+        switch (typelist[0]) {
+        case STRING:{
+            QString* v = static_cast<QString *> (valuelist[0]);
+            return v->isEmpty();
+            break;
+        }
+        default:
+            return false;
+            break;
+        }
+    }else if(typelist.size()==0){
+        return true;
+    }else{
+        return false;
     }
 }
 

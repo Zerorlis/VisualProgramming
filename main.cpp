@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     v.print();
     v[0] = 1;
     v[1] = 'h';
-    v[2] = "String";
+//    v[2] = "String";
     v[3] = QString("he");
     v[4] = 8.0;
     v[5] = v;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     v=5;
     Value h =8;
     Value i = 7;
-    cout << h * 7;
+    cout << h * i;
 
     intcout(v);
     boolcout(v);
