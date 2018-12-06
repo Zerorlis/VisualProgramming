@@ -16,8 +16,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp \
     node.cpp \
-    excep.cpp
+    excep.cpp \
+    test.cpp \
+    value.cpp
 
 HEADERS += \
     node.h \
-    excep.h
+    excep.h \
+    test.h \
+    value.h
