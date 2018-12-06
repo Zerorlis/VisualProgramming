@@ -3,6 +3,7 @@
 #include <QString>
 #include <float.h>
 #include <exception>
+#include "excep.h"
 
 Node::Node()
 {
@@ -103,15 +104,18 @@ double Value::toDouble() const{
                 //转化成功
                 return r;
             }else{
+                throw convert_error("can't convert the String to Number");
                 return 0;
             }
         }
             break;
         default:
+            throw convert_error("can't convert the List to Number");
             return 0;
             break;
         }
     }else{
+        throw convert_error("can't convert the List to Number");
         return 0;
     }
 
@@ -132,11 +136,11 @@ QString Value::toQString()const{
             return QString(*static_cast<QString*>(valuelist[0])); //返回值要是一个新的对象
             break;
         default:
-            return QString("");
+            throw convert_error("can't convert a list to QString");
             break;
         }
     }else{
-        return QString("");
+        throw convert_error("can't convert a list to QString");
     }
 
 }
@@ -245,7 +249,7 @@ Value::refValue Value::refValue::operator [](int i) const{
         break;
     }
     default:
-        throw std::domain_error("can't use [] to a number or string");
+        throw convert_error("can't use [] to a number or string");
     }
 }
 

@@ -155,6 +155,13 @@ int main(int argc, char *argv[])
     l[3][2]=3;
     cout <<((QString)(Value)l[2][2]).toStdString().data()<<endl;
     l.print();
+    cout<<"测试一些错误情况\n";
+    try{
+        Value n; // a list;
+        cout << double(n)<<endl;
+    }catch(exception & e){
+        cout << e.what()<<endl;
+    }
 
     return a.exec();
 }
