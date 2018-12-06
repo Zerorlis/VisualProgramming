@@ -13,6 +13,7 @@
 #include <QVector>
 #include <QLinkedList>
 #include <QList>
+#include "excep.h"
 ///
 /// \brief The Value class 用于表示node的值
 ///
@@ -34,13 +35,42 @@ private:
         int pos;
     public:
         refValue( Value * val, int pos);
-        refValue & operator = (const Value & value); //处理[]= 赋值用
-        refValue & operator = (const double  value) ;
-        refValue & operator = (const QString & value);
-        refValue & operator = (const char * const value);
-        refValue & operator = (const int value);
+
+        template<typename T>
+        refValue & operator = (const T & value){
+            val->setValue(pos,value);
+            return *this;
+        }//处理[]= 赋值用
+
         refValue operator [](int i) const;// 用于[][]这样的多重结构
         operator Value() const; // 处理[]
+        // 以下的都是value的重载,直接调用对应的
+        operator double() const;
+        operator QString() const;
+        template<typename T>
+        void addValue(const T & value){
+            val->getsetValue(pos)->addValue(value);
+        } //因为直接调用内部，所有模板函数走起
+        template<typename T>
+        void setValue(int i, const T & value){
+            val->getsetValue(pos)->setValue(i,value);
+        }
+        bool operator == (const Value & value) const;
+        bool operator != (const Value & value) const;
+        QString getDate(char f = 'g', int prec = 6 ) const ;
+        void setDate(QString date); //对于会有写操作的函数，需要写具体的做法。
+        void getValue(int i) const;
+        void clear();
+
+        void deleteValue(int i);
+        int getSize() const ;
+        TYPE getType() const;
+        void print() const;
+        bool toBool() const;
+        double toDouble() const; //QString和double可以互相转化，转化失败返回错误，list返回错误
+        QString toQString() const; // QString和double可以互相转化，list返回错误
+        int toInt() const;
+        bool isEmpty() const;
     };
 public:
     Value();
@@ -49,7 +79,7 @@ public:
     Value(const QString & value);
     Value(const char* const value); // 指针会在没有匹配的时候匹配到整数值的函数，bool的话就成功了，int会报错
     Value(const int value); // 为了防止0的时候，走上面的那个函数。
-
+    Value(const refValue & value); //有这个的目的是因为refValue强制转换的时候，会导致歧义，所以有这个，强制。
     virtual ~Value();
     Value & operator = (const Value & value);
     Value & operator = (const double value);
@@ -64,8 +94,6 @@ public:
     refValue operator [] (int i) ;
     bool operator == (const Value & value) const;
     bool operator != (const Value & value) const;
-
-
 
     ///
     /// \brief operator QString
@@ -157,17 +185,18 @@ public:
     TYPE getType() const;
     void print() const;
     bool toBool() const;
-    double toDouble() const; //QString和double可以互相转化，转化失败返回0，list返回0
-    QString toQString() const; // QString和double可以互相转化，list返回空
+    double toDouble() const; //QString和double可以互相转化，转化失败返回错误，list返回错误
+    QString toQString() const; // QString和double可以互相转化，list返回错误
     int toInt() const;
     ///
-    /// \brief isEmpty 这个字符串是不是空的，如果是数字，返回true，如果是list,空的list返回true，否则返回false
+    /// \brief isEmpty 这个字符串是不是空的，如果是数字，返回错误，如果是list,空的list返回true，否则返回false
     /// \return
     ///
     bool isEmpty() const;
 
 private:
     void copy(const Value & value); // 提供拷贝构造函数和=重载使用
+    Value * getsetValue(int i); // 用于被嵌套的value写的操作，只有被嵌套的Value可以被写，其他的类型不允许被写
 
 
 };

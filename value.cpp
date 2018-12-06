@@ -15,6 +15,9 @@ Value::Value()
 {
 
 }
+Value::Value(const refValue &value):Value(value.operator Value()){ // 这里实际上调用的是右值构造函数！！！可以通过这种方法，来指定转化方式
+
+}
 
 Value::Value(const Value & value){
     copy(value);
@@ -62,7 +65,7 @@ Value::~Value(){
 }
 
 void Value::copy(const Value&value){
-     for (int i =0 ;i < value.valuelist.size();i++){
+    for (int i =0 ;i < value.valuelist.size();i++){
         switch (value.typelist[i]){
         // 这里switch里面加括号是为了下面所有变量都叫v
         case DOUBLE:{
@@ -145,7 +148,6 @@ QString Value::toQString()const{
     }
 
 }
-
 
 bool Value::toBool()const{
     return bool(toDouble());
@@ -258,33 +260,67 @@ Value::refValue::refValue( Value *value, int position):val(value),pos(position){
 
 }
 
-Value::refValue & Value::refValue::operator =(const Value & value){
-    val->setValue(pos,value);
-    return *this;
+Value::refValue::operator double() const{
+    return double(val->getValue(pos));
 }
 
-Value::refValue & Value::refValue::operator =(const double  value){
-    val->setValue(pos,value);
-    return *this;
-}
-
-Value::refValue & Value::refValue::operator =(const QString & value){
-    val->setValue(pos,value);
-    return *this;
-}
-
-Value::refValue & Value::refValue::operator =(const char* const value){
-    val->setValue(pos,QString(value));
-    return *this;
-}
-Value::refValue & Value::refValue::operator =(const int value){
-    val->setValue(pos,double(value));
-    return *this;
+Value::refValue::operator QString() const{
+    return QString(val->getValue(pos));
 }
 
 Value::refValue::operator Value() const{
     return val->getValue(pos);
 }
+
+bool Value::refValue::operator == (const Value & value) const{
+    return val->getValue(pos) == value;
+}
+
+bool Value::refValue::operator != (const Value & value) const{
+    return val->getValue(pos) != value;
+}
+
+QString Value::refValue::getDate(char f, int prec) const{
+    return val->getValue(pos).getDate(f,prec);
+}
+
+void Value::refValue::getValue(int i) const{
+    val->getValue(pos).getValue(i);
+}
+
+void Value::refValue::clear(){
+    val->getValue(pos).clear();
+}
+
+void Value::refValue::deleteValue(int i){
+    val->getsetValue(pos)->deleteValue(i);
+}
+
+int Value::refValue::getSize() const{
+    return val->getValue(pos).getSize();
+}
+
+Value::TYPE Value::refValue::getType() const{
+    return val->getValue(pos).getType();
+}
+
+void Value::refValue::print() const{
+    val->getValue(pos).print();
+}
+double Value::refValue::toDouble() const{
+    return val->getValue(pos).toDouble();
+}
+QString Value::refValue::toQString() const{
+    return val->getValue(pos).toQString();
+}
+int Value::refValue::toInt() const{
+    return val->getValue(pos).toInt();
+}
+bool Value::refValue::isEmpty() const{
+    return val->getValue(pos).isEmpty();
+}
+
+
 
 Value Value::getValue(int i) const{
     if (i<0 || i >  getSize()-1)
@@ -478,7 +514,7 @@ int Value::getSize()const {
 
 Value::TYPE Value::getType() const{
     if(valuelist.size()==1){
-       return typelist[0];
+        return typelist[0];
     }else{
         return LIST;
     }
@@ -492,15 +528,19 @@ bool Value::isEmpty() const{
             return v->isEmpty();
             break;
         }
-        default:
+        case LIST:
+            return false;
+            break;
+        case DOUBLE:
+            throw convert_error("double can't use isEmpty");
             return false;
             break;
         }
     }else if(typelist.size()==0){
         return true;
-    }else{
-        return false;
     }
+    return false;
+
 }
 
 QString Value::getDate(char f, int prec) const{
@@ -550,4 +590,16 @@ QString Value::getDate(char f, int prec) const{
 
 void Value::print() const{
     std::cout<<getDate().toStdString().data()<<std::endl;
+}
+Value * Value::getsetValue(int i){
+    void * obj = valuelist[i];
+    switch (typelist[i]) {
+    case LIST:{
+        Value * p = static_cast<Value*>(obj);
+        return p;
+        break;
+    }
+    default:
+        throw convert_error("can't use addValue to a number or string");
+    }
 }

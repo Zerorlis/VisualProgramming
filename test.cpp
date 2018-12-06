@@ -15,6 +15,9 @@ void intcout(int i){
 void boolcout(bool i){
     cout << "boolcout "<< i << endl;
 }
+void doublecout(double i){
+    cout << "double" << i<<endl;
+}
 
 void charcout(const char*h){
     cout << "charcout" << h <<endl;
@@ -22,6 +25,10 @@ void charcout(const char*h){
 
 void charpcout(const char * i){
     cout << "charcout" << i << endl;
+}
+void valuecout(const Value i){
+    cout << "valuecout";
+    i.print();
 }
 void testvalue(){
      Value v;
@@ -98,7 +105,15 @@ void testvalue(){
     cout << "测试[]\n";
     v.print();
     for (int i=0;i<v.getSize();i++){
-    ((Value)v[i]).print();
+//       v[i].print();
+//        try{
+//            cout << v[i]<<"h"<< <<endl;
+//        }catch (exception & e){
+//            v[i].print();
+//        }
+        ((Value)v[i]).print();
+
+
     }
     cout <<"测试[]=\n";
     v.print();
@@ -122,11 +137,9 @@ void testvalue(){
 
     Value i = 0;
     Value j;
-    cout << h.isEmpty() << endl;
-    cout << i.isEmpty() << endl;
-    cout << j.isEmpty() << endl;
     Value k("");
     cout <<k.isEmpty() << endl;
+
 
     cout << "隐式转换的测试\n";
     Value m1("0");
@@ -154,7 +167,8 @@ void testvalue(){
     l.print();
     l[2][4]=3;
     l[3][2]=3;
-    cout <<((QString)(Value)l[2][2]).toStdString().data()<<endl;
+    l[3].clear();
+//    cout <<(QString(l[2][2])).toStdString().data()<<endl;
     l.print();
     cout<<"测试一些错误情况\n";
     try{
