@@ -2,6 +2,7 @@
 #include <iostream>
 #include <QString>
 #include <float.h>
+#include <exception>
 
 Node::Node()
 {
@@ -128,7 +129,7 @@ QString Value::toQString()const{
             return QString::number(*(static_cast<double*>(valuelist[0])));
             break;
         case STRING:
-            return *static_cast<QString*>(valuelist[0]); //返回值为一个表达式的结果，所以不是那块内存，而是一个临时对象，会调用拷贝构造函数
+            return QString(*static_cast<QString*>(valuelist[0])); //返回值要是一个新的对象
             break;
         default:
             return QString("");
@@ -225,10 +226,28 @@ Value & Value::operator = (const char * const value){
 Value & Value::operator=(const int value){
     return operator =(double(value));
 }
-Value::refValue Value::operator [](int i){
+Value::refValue Value::operator [](int i) {
+    if (i<0 || i>getSize()-1)
+        throw std::out_of_range("out of range");
     return refValue(this,i);
 }
 
+Value::refValue Value::refValue::operator [](int i) const{
+    void * obj = val->valuelist[pos];
+    TYPE type = val->typelist[pos];
+    switch (type) {
+    case LIST:{
+        Value * p = static_cast<Value*>(obj);
+        if (i<0||i>p->getSize()){
+            throw std::out_of_range("out of range");
+        }
+        return refValue(p,i);
+        break;
+    }
+    default:
+        throw std::domain_error("can't use [] to a number or string");
+    }
+}
 
 Value::refValue::refValue( Value *value, int position):val(value),pos(position){
 
@@ -264,7 +283,7 @@ Value::refValue::operator Value() const{
 
 Value Value::getValue(int i) const{
     if (i<0 || i >  getSize()-1)
-        return Value();
+        throw std::out_of_range("out of range");
     switch (typelist[i]) {
     case DOUBLE:
         return Value(*static_cast<double *>(valuelist[i]));
@@ -283,7 +302,7 @@ Value Value::getValue(int i) const{
 
 void Value::setValue(int i, const double value){
     if (i < 0 || i > valuelist.size()-1){
-        return ;
+        throw std::out_of_range("out of range");
     }
     switch (typelist[i]) {
     case DOUBLE:{
@@ -308,7 +327,7 @@ void Value::setValue(int i, const double value){
 
 void Value::setValue(int i, const QString & value){
     if (i < 0 || i > valuelist.size()-1){
-        return ;
+        throw std::out_of_range("out_of_range");
     }
     switch (typelist[i]) {
     case DOUBLE:{
@@ -333,7 +352,7 @@ void Value::setValue(int i, const QString & value){
 
 void Value::setValue(int i, const Value & value){
     if (i < 0 || i > valuelist.size()-1){
-        return ;
+        throw std::out_of_range("out_of_range");
     }
     // 先保存一遍value的值，因为可能会添加自己，导致自己变了
     Value * self = NULL;
@@ -452,7 +471,7 @@ int Value::getSize()const {
     return typelist.size();
 }
 
-Value::type Value::getType() const{
+Value::TYPE Value::getType() const{
     if(valuelist.size()==1){
        return typelist[0];
     }else{

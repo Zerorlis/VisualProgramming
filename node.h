@@ -17,12 +17,12 @@
 class Value
 {
 private:
-    enum type{
+    enum TYPE{
         DOUBLE,STRING,LIST
     };
 private:
     QVector<void *> valuelist; ///< 用于保存值，用void指针指着
-    QVector<type> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
+    QVector<TYPE> typelist; ///< 用于保存上面的list的列表,存的内容代表类型，用于多状态存储
     ///
     /// \brief The ref class ,一个代理类，用于[]的返回值的赋值和给值操作
     ///
@@ -33,10 +33,11 @@ private:
     public:
         refValue( Value * val, int pos);
         refValue & operator = (const Value & value); //处理[]= 赋值用
-        refValue & operator = (const double  value);
+        refValue & operator = (const double  value) ;
         refValue & operator = (const QString & value);
         refValue & operator = (const char * const value);
         refValue & operator = (const int value);
+        refValue operator [](int i) const;// 用于[][]这样的多重结构
         operator Value() const; // 处理[]
     };
 public:
@@ -58,7 +59,7 @@ public:
     /// \param i 位置
     /// \return 返回一个代理类，这个类和这个Value对象链接，访问的时候会自动转化为Value，value有更新的时候会跟着更新，可以对其赋值
     /// 但是放问value的内容需要具体的内容需要使用显式转换,返回都是Value的形式。
-    refValue operator [] (int i);
+    refValue operator [] (int i) ;
     bool operator == (const Value & value) const;
     bool operator != (const Value & value) const;
 
@@ -151,7 +152,7 @@ public:
     /// \brief getType 获取当前value的type
     /// \return LIST,DOUBLE,STRING，class内部的枚举类型
     ///
-    type getType() const;
+    TYPE getType() const;
     void print() const;
     bool toBool() const;
     double toDouble() const; //QString和double可以互相转化，转化失败返回0，list返回0

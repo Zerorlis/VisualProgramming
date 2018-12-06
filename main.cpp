@@ -10,6 +10,10 @@ void boolcout(bool i){
     cout << "boolcout "<< i << endl;
 }
 
+void charcout(const char*h){
+    cout << "charcout" << h <<endl;
+}
+
 void charpcout(const char * i){
     cout << i << endl;
 }
@@ -99,16 +103,12 @@ int main(int argc, char *argv[])
     v.print();
     v[0] = 0;
     v[1] = 'h';
-//    v[2] = "String";
+    v[2] = "String";
     v[3] = QString("he");
     v[4] = 8.0;
     v[5] = v;
     v[6] = true;
     v.print();
-//    todo:
-//    v[5][1]='helo';
-//    v.print();
-
     cout<< "测试类型转化\n";
     Value g = v;
     v=5;
@@ -127,10 +127,34 @@ int main(int argc, char *argv[])
     Value k("");
     cout <<k.isEmpty() << endl;
 
-    cout << "当一个bool的输出\n";
-    boolcout(h);
-    boolcout(i);
-    boolcout(j);
-    boolcout(k);
+    cout << "隐式转换的测试\n";
+    Value m1("0");
+    Value m2(0);
+    Value m3("1");
+    Value m4(1);
+    intcout(m1);
+    intcout(m2);
+    intcout(m3);
+    intcout(m4);
+    boolcout(m1);
+    boolcout(m2);
+    boolcout(m3);
+    boolcout(m4);
+
+    cout << "测试当一个数组用";
+    Value l;
+    for(int i =0;i<5;i++){
+        Value k;
+        for (int j =0;j<5;j++){
+            k.addValue(j+i*10);
+        }
+        l.addValue(k);
+    }
+    l.print();
+    l[2][4]=3;
+    l[3][2]=3;
+    cout <<((QString)(Value)l[2][2]).toStdString().data()<<endl;
+    l.print();
+
     return a.exec();
 }
